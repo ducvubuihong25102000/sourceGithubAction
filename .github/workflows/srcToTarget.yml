@@ -1,0 +1,42 @@
+name: Deploy to target
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+    steps:
+      - name: Set Up Source Repository
+        shell: pwsh
+        run: |
+          git config user.name "Vũ Bùi Hồng Đức"
+          git config user.email "ducvubuihong25102000@gmail.com"
+
+      - name: Set Up Source Repository
+        shell: pwsh
+        run: |
+          if (Test-Path "sourceGithubAction/.git") {
+            Write-Host "Repository already exists. Fetching latest changes..."
+            cd sourceGithubAction
+            git checkout main
+            git pull --ff-only origin main
+          } else {
+            Write-Host "Cloning repository..."
+            git clone https://x-access-token:${{ secrets.PAT }}@https://github.com/ducvubuihong25102000/sourceGithubAction.git
+            cd sourceGithubAction
+          }
+
+
+      - name: Push Changes to Target Repository
+        shell: pwsh
+        run: |
+          cd sourceGithubAction
+          if (-not (git remote get-url uat)) {
+            git remote add uat https://x-access-token:${{ secrets.PAT }}@https://github.com/ducvubuihong25102000/targetGithubAction.git
+          }
+          git push uat main --force
+        env:
+          GH_TOKEN: ${{ secrets.PAT }}
