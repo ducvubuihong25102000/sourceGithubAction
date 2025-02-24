@@ -31,6 +31,9 @@ jobs:
       - name: Push Changes to Target Repository
         shell: cmd
         run: |
+          pwd
+          cd sourceGithubAction
+          pwd
           git remote | findstr uat >nul || git remote add uat https://x-access-token:${{ secrets.PAT }}@github.com/ducvubuihong25102000/targetGithubAction.git
           git push uat main --force
         env:
